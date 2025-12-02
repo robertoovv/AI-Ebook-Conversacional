@@ -156,8 +156,8 @@
 
   <section class="intro-ra">
     <p>
-      Arrastra tu propio archivo .glb, ponle nombre y personalidad, y habla con él/ella 
-      en realidad aumentada. ¡Sin programar!
+      Arrastra tu propio archivo .glb o .fbx o usa el modelo por defecto.  
+      Ponle nombre y personalidad y habla con él/ella en realidad aumentada. ¡Sin programar!
     </p>
   </section>
 
@@ -175,14 +175,14 @@
              value="Eres un dragón sabio que habla con humor y emojis 🐉">
     </label>
     <label>
-      Arrastra tu modelo 3D (.glb) o pega la URL:
+      Arrastra tu modelo 3D (.glb / .fbx) o pega la URL:
       <input type="url" id="modelURL" placeholder="https://tu-servidor.com/modelo.glb">
     </label>
     <div id="dropArea" class="drop-area">
-      <p>🗂️ Arrastra aquí tu archivo .glb</p>
+      <p>🗂️ Arrastra aquí tu archivo .glb / .fbx</p>
       <small>o haz clic para seleccionarlo</small>
     </div>
-    <input type="file" id="fileInput" accept=".glb" style="display:none;">
+    <input type="file" id="fileInput" accept=".glb,.fbx" style="display:none;">
     <button id="startBtn" class="ar-btn">Iniciar RA + IA ✨</button>
   </section>
 
@@ -225,7 +225,10 @@ const logBox = document.getElementById('log');
 
 let scene, camera, renderer, model, mixer, clock;
 let ARSession = null;
-let modelFile = null; // archivo .glb arrastrado
+let modelFile = null; // archivo .glb o .fbx arrastrado
+
+// CONFIGURACIÓN POR DEFECTO
+const DEFAULT_MODEL = 'models/default.fbx'; // ← cambia aquí tu archivo FBX
 
 // Drag & Drop
 dropArea.addEventListener('dragover', e => {
@@ -239,17 +242,17 @@ dropArea.addEventListener('drop', e => {
   e.preventDefault();
   dropArea.style.borderColor = 'rgba(255,255,255,0.2)';
   const file = e.dataTransfer.files[0];
-  if (file && file.name.endsWith('.glb')) {
+  if (file && (file.name.endsWith('.glb') || file.name.endsWith('.fbx'))) {
     modelFile = file;
     dropArea.innerHTML = `<p>✅ ${file.name}</p>`;
   } else {
-    alert('Por favor arrastra un archivo .glb');
+    alert('Por favor arrastra un archivo .glb o .fbx');
   }
 });
 dropArea.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', e => {
   const file = e.target.files[0];
-  if (file && file.name.endsWith('.glb')) {
+  if (file && (file.name.endsWith('.glb') || file.name.endsWith('.fbx'))) {
     modelFile = file;
     dropArea.innerHTML = `<p>✅ ${file.name}</p>`;
   }
@@ -281,17 +284,19 @@ startBtn.addEventListener('click', async () => {
   const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
   scene.add(light);
 
-  // Cargar modelo (URL o archivo)
-  const loader = new THREE.GLTFLoader();
-  const url = modelFile ? URL.createObjectURL(modelFile) : modelURLInp.value;
-  loader.load(url, gltf => {
-    model = gltf.scene;
-    model.scale.set(0.3, 0.3, 0.3);
+  // Cargar modelo (archivo arrastrado o URL o default)
+  const loader = modelFile ? new THREE.GLTFLoader() : new THREE.FBXLoader();
+  const url = modelFile ? URL.createObjectURL(modelFile) : (modelURLInp.value || DEFAULT_MODEL);
+  loader.load(url, obj => {
+    model = obj.scene || obj; // FBX devuelve directamente el modelo
+    model.scale.set(0.01, 0.01, 0.01); // FBX suele ser más grande
     scene.add(model);
 
     // Animaciones (si tiene)
     mixer = new THREE.AnimationMixer(model);
-    if (gltf.animations.length) mixer.clipAction(gltf.animations[0]).play();
+    if (obj.animations && obj.animations.length) {
+      mixer.clipAction(obj.animations[0]).play();
+    }
 
     log('Modelo 3D cargado');
     startChat(); // habilitar chat
@@ -360,6 +365,7 @@ function log(msg) {
 <!-- Three.js + WebXR polyfill (CDN) -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/loaders/FBXLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.min.js"></script>
 </body>
 </html>

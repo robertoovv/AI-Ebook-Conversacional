@@ -137,11 +137,11 @@
       cursor: pointer;
     }
     .log {
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.6);
-      margin-top: 0.5rem;
-      max-height: 120px;
-      overflow-y: auto;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 0.5rem;
+        max-height: 120px;
+        overflow-y: auto;
     }
   </style>
 </head>
@@ -184,7 +184,7 @@
     </div>
     <input type="file" id="fileInput" accept=".glb,.fbx" style="display:none;">
     
-    <!-- BOTÓN PARA ELEGIR -->
+    <!-- BOTONES PARA ELEGIR -->
     <div style="margin-top:1rem;display:flex;gap:1rem;">
       <button id="useDefaultBtn" class="ar-btn">✅ Usar modelo por defecto</button>
       <button id="startBtn" class="ar-btn">▶️ Iniciar RA + IA ✨</button>
@@ -321,7 +321,7 @@ startBtn.addEventListener('click', async () => {
 // Chat con IA (simulado)
 function startChat() {
   sendBtn.addEventListener('click', async () => {
-    const msg发展 = userMsgInp.value.trim();
+    const msg = userMsgInp.value.trim();
     if (!msg) return;
     appendChat(msg, 'user');
     userMsgInp.value = '';

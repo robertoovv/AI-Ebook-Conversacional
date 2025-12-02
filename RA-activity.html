@@ -156,7 +156,7 @@
 
   <section class="intro-ra">
     <p>
-      Arrastra tu propio archivo .glb o .fbx o usa el modelo por defecto.  
+      Arrastra tu propio archivo .glb / .fbx o usa el modelo por defecto.  
       Ponle nombre y personalidad y habla con él/ella en realidad aumentada. ¡Sin programar!
     </p>
   </section>
@@ -183,7 +183,12 @@
       <small>o haz clic para seleccionarlo</small>
     </div>
     <input type="file" id="fileInput" accept=".glb,.fbx" style="display:none;">
-    <button id="startBtn" class="ar-btn">Iniciar RA + IA ✨</button>
+    
+    <!-- BOTÓN PARA ELEGIR -->
+    <div style="margin-top:1rem;display:flex;gap:1rem;">
+      <button id="useDefaultBtn" class="ar-btn">✅ Usar modelo por defecto</button>
+      <button id="startBtn" class="ar-btn">▶️ Iniciar RA + IA ✨</button>
+    </div>
   </section>
 
   <!-- PASO 2 – RA + Chat -->
@@ -218,6 +223,7 @@ const personalityInp = document.getElementById('personality');
 const modelURLInp = document.getElementById('modelURL');
 const dropArea = document.getElementById('dropArea');
 const fileInput = document.getElementById('fileInput');
+const useDefaultBtn = document.getElementById('useDefaultBtn');
 const startBtn = document.getElementById('startBtn');
 const userMsgInp = document.getElementById('userMsg');
 const sendBtn = document.getElementById('sendBtn');
@@ -256,6 +262,12 @@ fileInput.addEventListener('change', e => {
     modelFile = file;
     dropArea.innerHTML = `<p>✅ ${file.name}</p>`;
   }
+});
+
+// Usar modelo por defecto
+useDefaultBtn.addEventListener('click', () => {
+  modelFile = null;
+  dropArea.innerHTML = `<p>✅ Usarás el modelo por defecto</p>`;
 });
 
 // Iniciar RA + cargar modelo
@@ -309,7 +321,7 @@ startBtn.addEventListener('click', async () => {
 // Chat con IA (simulado)
 function startChat() {
   sendBtn.addEventListener('click', async () => {
-    const msg = userMsgInp.value.trim();
+    const msg发展 = userMsgInp.value.trim();
     if (!msg) return;
     appendChat(msg, 'user');
     userMsgInp.value = '';
